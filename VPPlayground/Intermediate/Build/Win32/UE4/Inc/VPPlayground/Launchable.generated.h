@@ -9,8 +9,6 @@
 
 PRAGMA_DISABLE_DEPRECATION_WARNINGS
 class AActor;
-struct FVector;
-struct FHitResult;
 #ifdef VPPLAYGROUND_Launchable_generated_h
 #error "Launchable.generated.h already included, missing '#pragma once' in Launchable.h"
 #endif
@@ -19,12 +17,16 @@ struct FHitResult;
 #define HostProject_Plugins_VPPlayground_Source_VPPlayground_Public_Launchable_h_13_SPARSE_DATA
 #define HostProject_Plugins_VPPlayground_Source_VPPlayground_Public_Launchable_h_13_RPC_WRAPPERS \
  \
-	DECLARE_FUNCTION(execOnHit);
+	DECLARE_FUNCTION(execLaunch); \
+	DECLARE_FUNCTION(execPlayEffects); \
+	DECLARE_FUNCTION(execOnBeginOverlap);
 
 
 #define HostProject_Plugins_VPPlayground_Source_VPPlayground_Public_Launchable_h_13_RPC_WRAPPERS_NO_PURE_DECLS \
  \
-	DECLARE_FUNCTION(execOnHit);
+	DECLARE_FUNCTION(execLaunch); \
+	DECLARE_FUNCTION(execPlayEffects); \
+	DECLARE_FUNCTION(execOnBeginOverlap);
 
 
 #define HostProject_Plugins_VPPlayground_Source_VPPlayground_Public_Launchable_h_13_INCLASS_NO_PURE_DECLS \
@@ -72,6 +74,8 @@ DEFINE_VTABLE_PTR_HELPER_CTOR_CALLER(ULaunchable); \
 #define HostProject_Plugins_VPPlayground_Source_VPPlayground_Public_Launchable_h_13_PRIVATE_PROPERTY_OFFSET \
 	FORCEINLINE static uint32 __PPO__RemoveActorAfterLaunch() { return STRUCT_OFFSET(ULaunchable, RemoveActorAfterLaunch); } \
 	FORCEINLINE static uint32 __PPO__RemoveDelay() { return STRUCT_OFFSET(ULaunchable, RemoveDelay); } \
+	FORCEINLINE static uint32 __PPO__EnableRagdoll() { return STRUCT_OFFSET(ULaunchable, EnableRagdoll); } \
+	FORCEINLINE static uint32 __PPO__LaunchAngle() { return STRUCT_OFFSET(ULaunchable, LaunchAngle); } \
 	FORCEINLINE static uint32 __PPO__Velocity() { return STRUCT_OFFSET(ULaunchable, Velocity); } \
 	FORCEINLINE static uint32 __PPO__UpwardForce() { return STRUCT_OFFSET(ULaunchable, UpwardForce); } \
 	FORCEINLINE static uint32 __PPO__HitParticle() { return STRUCT_OFFSET(ULaunchable, HitParticle); } \

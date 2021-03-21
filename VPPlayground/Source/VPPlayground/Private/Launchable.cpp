@@ -5,6 +5,7 @@
 
 
 #include "Launcher.h"
+#include "Animation/SkeletalMeshActor.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
@@ -18,7 +19,6 @@ ULaunchable::ULaunchable()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
 // Called when the game starts
 void ULaunchable::BeginPlay()
 {
@@ -29,36 +29,19 @@ void ULaunchable::BeginPlay()
 
 void ULaunchable::InitOwnerConfig()
 {
-	UE_LOG(LogTemp, Warning, TEXT("InitOwner called"));
-	// enable launch on hit event
-	GetOwner()->OnActorHit.AddDynamic(this, &ULaunchable::OnHit);
-
-	// set ACharacter-specific settings
-	if (ACharacter* Character = Cast<ACharacter>(GetOwner()))
-	{
-		Character->GetCapsuleComponent()->SetSimulatePhysics(true);
-		Character->GetCapsuleComponent()->SetNotifyRigidBodyCollision(true);
-		Character->GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
-	}
-	// set AStaticMeshActor-specific settings
-	else if (AStaticMeshActor* StaticMesh = Cast<AStaticMeshActor>(GetOwner()))
-	{
-		StaticMesh->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
-		StaticMesh->GetStaticMeshComponent()->SetSimulatePhysics(true);
-		StaticMesh->GetStaticMeshComponent()->SetNotifyRigidBodyCollision(true);
-	}
-
+	// enable launch on overlap event 
+	GetOwner()->OnActorBeginOverlap.AddDynamic(this, &ULaunchable::OnBeginOverlap);
 }
 
-void ULaunchable::OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit)
+void ULaunchable::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
-	// check if OtherActor is allowed to trigger launch event
-	if (!HasLaunched && OtherActor->GetComponentByClass(ULauncher::StaticClass()))
+	if (!HasLaunched && OverlappedActor != OtherActor && OtherActor->GetComponentByClass(ULauncher::StaticClass()))
 	{
 		PlayEffects();
-		Launch(SelfActor, NormalImpulse);
+		Launch();
 		HasLaunched = true;
 	}
+	
 }
 
 void ULaunchable::PlayEffects() const
@@ -73,31 +56,78 @@ void ULaunchable::PlayEffects() const
 	}
 }
 
-void ULaunchable::Launch(AActor* ActorToLaunch, FVector Impulse) const
+FVector ULaunchable::GetImpulse(AActor* ActorToLaunch) const
 {
-	// calculate launch trajectory
-	Impulse.Normalize();
-	Impulse.Z += UpwardForce;
+	FVector Impulse {0, 0, 0};
+	if (ACharacter* Character = Cast<ACharacter>(ActorToLaunch))
+	{
+		// calculate forward trajectory
+		FRotator const MeshRotationOffset = Character->GetBaseRotationOffsetRotator();
+		Impulse = MeshRotationOffset.GetInverse().RotateVector(Character->GetMesh()->GetForwardVector());
+		// rotate vector based on given launch angle
+		Impulse = Impulse.RotateAngleAxis(LaunchAngle, Character->GetMesh()->GetUpVector());
+	}
+	else if (AStaticMeshActor* StaticMesh = Cast<AStaticMeshActor>(ActorToLaunch))
+	{
+		Impulse = StaticMesh->GetStaticMeshComponent()->GetForwardVector();
+		Impulse = Impulse.RotateAngleAxis(LaunchAngle, StaticMesh->GetStaticMeshComponent()->GetUpVector());
+	}
+	else if (ASkeletalMeshActor* SkeletalMesh = Cast<ASkeletalMeshActor>(ActorToLaunch))
+	{
+		FRotator const MeshRotationOffset = SkeletalMesh->GetSkeletalMeshComponent()->GetRelativeRotation();
+		Impulse = MeshRotationOffset.GetInverse().RotateVector(SkeletalMesh->GetSkeletalMeshComponent()->GetForwardVector());
+		Impulse = Impulse.RotateAngleAxis(LaunchAngle, SkeletalMesh->GetSkeletalMeshComponent()->GetUpVector());
+	}
 	Impulse = Impulse * Velocity;
+	Impulse.Z += UpwardForce;
+
+	return Impulse;
+}
+
+void ULaunchable::Launch() const
+{
+	AActor* ActorToLaunch = GetOwner();
+	if (!ActorToLaunch) return;
+	// calculate launch impulse
+	FVector const Impulse = GetImpulse(ActorToLaunch);
 	// launch logic for ACharacter
 	if (ACharacter* Character = Cast<ACharacter>(ActorToLaunch))
 	{
-		// enable ragdoll physics
-		Character->GetCharacterMovement()->DisableMovement();
-		Character->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		Character->GetMesh()->SetAllBodiesSimulatePhysics(true);
-		// launch mesh to trajectory
-		float Mass = Character->GetMesh()->GetMass();
-		Character->GetMesh()->AddImpulse(Impulse * Mass);
-		// disable capsule collision after launch
-		Character->GetCapsuleComponent()->SetSimulatePhysics(false);
-		Character->GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
+		if (EnableRagdoll)
+		{
+			// enable ragdoll physics
+			Character->GetCharacterMovement()->DisableMovement();
+			Character->GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+			Character->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			Character->GetMesh()->SetAllBodiesSimulatePhysics(true);
+			// launch mesh to trajectory
+			Character->GetMesh()->AddImpulse(Impulse * Character->GetMesh()->GetMass());
+			// disable capsule collision after launch
+			Character->GetCapsuleComponent()->SetSimulatePhysics(false);
+			Character->GetCapsuleComponent()->SetCollisionProfileName(TEXT("NoCollision"));
+		}
+		else
+		{
+			Character->GetCapsuleComponent()->AddImpulse(Impulse * Character->GetCapsuleComponent()->GetMass());
+		}
 	}
 	// launch logic for AStaticMeshActor
 	else if (AStaticMeshActor* StaticMesh = Cast<AStaticMeshActor>(ActorToLaunch))
 	{
-		float Mass = StaticMesh->GetStaticMeshComponent()->GetMass();
-		StaticMesh->GetStaticMeshComponent()->AddImpulse(Impulse * Mass);
+		StaticMesh->GetStaticMeshComponent()->AddImpulse(Impulse * StaticMesh->GetStaticMeshComponent()->GetMass());
+	}
+	// launch logic for ASkeletalMeshActor
+	else if (ASkeletalMeshActor* SkeletalMesh = Cast<ASkeletalMeshActor>(ActorToLaunch))
+	{
+		if (EnableRagdoll)
+		{
+			// enable ragdoll physics
+			SkeletalMesh->GetSkeletalMeshComponent()->SetCollisionProfileName(TEXT("Ragdoll"));
+			SkeletalMesh->GetSkeletalMeshComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		}
+		// launch mesh to trajectory
+		SkeletalMesh->GetSkeletalMeshComponent()->SetAllBodiesSimulatePhysics(true);
+		SkeletalMesh->GetSkeletalMeshComponent()->AddImpulse(Impulse * SkeletalMesh->GetSkeletalMeshComponent()->GetMass());
 	}
 	// remove actor from game after launch
 	if (RemoveActorAfterLaunch)

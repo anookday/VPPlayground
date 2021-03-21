@@ -20,10 +20,14 @@ private:
 	bool RemoveActorAfterLaunch = false;
 	UPROPERTY(EditAnywhere, Category = "General")
 	float RemoveDelay = 0.f;
-	UPROPERTY(EditAnywhere, Category = "Physics")
-	float Velocity = 2000.f;
-	UPROPERTY(EditAnywhere, Category = "Physics")
-	float UpwardForce = 2.f;
+	UPROPERTY(EditAnywhere, Category = "General")
+	bool EnableRagdoll = true;
+	UPROPERTY(EditAnywhere, Category = "Direction", meta = (ClampMin = "0.0", ClampMax = "360.0", UMin = "0.0", Umax = "360.0"))
+	float LaunchAngle = 180.f;
+	UPROPERTY(EditAnywhere, Category = "Direction")
+	float Velocity = 500.f;
+	UPROPERTY(EditAnywhere, Category = "Direction")
+	float UpwardForce = 1000.f;
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	UParticleSystem* HitParticle = nullptr;
 	UPROPERTY(EditAnywhere, Category = "Effects")
@@ -31,9 +35,12 @@ private:
 	// FUNCTIONS	
 	void InitOwnerConfig();
 	UFUNCTION()
-	void OnHit(AActor* SelfActor, AActor* OtherActor, FVector NormalImpulse, const FHitResult& Hit);
+	void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+	UFUNCTION(BlueprintCallable, Category = "Launch Effects")
 	void PlayEffects() const;
-	void Launch(AActor* ActorToLaunch, FVector Impulse) const;
+	FVector GetImpulse(AActor* ActorToLaunch) const;
+	UFUNCTION(BlueprintCallable, Category = "Launch Owner")
+	void Launch() const;
 
 public:	
 	// Sets default values for this component's properties

@@ -8,3 +8,4 @@ ULauncher::ULauncher()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
+
