@@ -18,21 +18,12 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 	ENGINE_API UClass* Z_Construct_UClass_UActorComponent();
 	UPackage* Z_Construct_UPackage__Script_VPPlayground();
 	ENGINE_API UClass* Z_Construct_UClass_AActor_NoRegister();
-	ENGINE_API UClass* Z_Construct_UClass_UParticleSystem_NoRegister();
-	ENGINE_API UClass* Z_Construct_UClass_USoundBase_NoRegister();
 // End Cross Module References
 	DEFINE_FUNCTION(ULaunchable::execLaunch)
 	{
 		P_FINISH;
 		P_NATIVE_BEGIN;
 		P_THIS->Launch();
-		P_NATIVE_END;
-	}
-	DEFINE_FUNCTION(ULaunchable::execPlayEffects)
-	{
-		P_FINISH;
-		P_NATIVE_BEGIN;
-		P_THIS->PlayEffects();
 		P_NATIVE_END;
 	}
 	DEFINE_FUNCTION(ULaunchable::execOnBeginOverlap)
@@ -50,7 +41,6 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 		static const FNameNativePtrPair Funcs[] = {
 			{ "Launch", &ULaunchable::execLaunch },
 			{ "OnBeginOverlap", &ULaunchable::execOnBeginOverlap },
-			{ "PlayEffects", &ULaunchable::execPlayEffects },
 		};
 		FNativeFunctionRegistrar::RegisterFunctions(Class, Funcs, UE_ARRAY_COUNT(Funcs));
 	}
@@ -63,7 +53,7 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 	};
 #if WITH_METADATA
 	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_ULaunchable_Launch_Statics::Function_MetaDataParams[] = {
-		{ "Category", "Launch Owner" },
+		{ "Category", "Launch Actions" },
 		{ "ModuleRelativePath", "Public/Launchable.h" },
 	};
 #endif
@@ -100,7 +90,9 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 	};
 #if WITH_METADATA
 	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_ULaunchable_OnBeginOverlap_Statics::Function_MetaDataParams[] = {
+		{ "Comment", "// FUNCTIONS\x09\n" },
 		{ "ModuleRelativePath", "Public/Launchable.h" },
+		{ "ToolTip", "FUNCTIONS" },
 	};
 #endif
 	const UE4CodeGen_Private::FFunctionParams Z_Construct_UFunction_ULaunchable_OnBeginOverlap_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_ULaunchable, nullptr, "OnBeginOverlap", nullptr, nullptr, sizeof(Launchable_eventOnBeginOverlap_Parms), Z_Construct_UFunction_ULaunchable_OnBeginOverlap_Statics::PropPointers, UE_ARRAY_COUNT(Z_Construct_UFunction_ULaunchable_OnBeginOverlap_Statics::PropPointers), RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x00040401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_ULaunchable_OnBeginOverlap_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_ULaunchable_OnBeginOverlap_Statics::Function_MetaDataParams)) };
@@ -110,29 +102,6 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 		if (!ReturnFunction)
 		{
 			UE4CodeGen_Private::ConstructUFunction(ReturnFunction, Z_Construct_UFunction_ULaunchable_OnBeginOverlap_Statics::FuncParams);
-		}
-		return ReturnFunction;
-	}
-	struct Z_Construct_UFunction_ULaunchable_PlayEffects_Statics
-	{
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam Function_MetaDataParams[];
-#endif
-		static const UE4CodeGen_Private::FFunctionParams FuncParams;
-	};
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UFunction_ULaunchable_PlayEffects_Statics::Function_MetaDataParams[] = {
-		{ "Category", "Launch Effects" },
-		{ "ModuleRelativePath", "Public/Launchable.h" },
-	};
-#endif
-	const UE4CodeGen_Private::FFunctionParams Z_Construct_UFunction_ULaunchable_PlayEffects_Statics::FuncParams = { (UObject*(*)())Z_Construct_UClass_ULaunchable, nullptr, "PlayEffects", nullptr, nullptr, 0, nullptr, 0, RF_Public|RF_Transient|RF_MarkAsNative, (EFunctionFlags)0x44040401, 0, 0, METADATA_PARAMS(Z_Construct_UFunction_ULaunchable_PlayEffects_Statics::Function_MetaDataParams, UE_ARRAY_COUNT(Z_Construct_UFunction_ULaunchable_PlayEffects_Statics::Function_MetaDataParams)) };
-	UFunction* Z_Construct_UFunction_ULaunchable_PlayEffects()
-	{
-		static UFunction* ReturnFunction = nullptr;
-		if (!ReturnFunction)
-		{
-			UE4CodeGen_Private::ConstructUFunction(ReturnFunction, Z_Construct_UFunction_ULaunchable_PlayEffects_Statics::FuncParams);
 		}
 		return ReturnFunction;
 	}
@@ -173,14 +142,6 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_UpwardForce_MetaData[];
 #endif
 		static const UE4CodeGen_Private::FFloatPropertyParams NewProp_UpwardForce;
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_HitParticle_MetaData[];
-#endif
-		static const UE4CodeGen_Private::FObjectPropertyParams NewProp_HitParticle;
-#if WITH_METADATA
-		static const UE4CodeGen_Private::FMetaDataPairParam NewProp_HitSound_MetaData[];
-#endif
-		static const UE4CodeGen_Private::FObjectPropertyParams NewProp_HitSound;
 		static const UE4CodeGen_Private::FPropertyParamsBase* const PropPointers[];
 		static const FCppClassTypeInfoStatic StaticCppClassTypeInfo;
 		static const UE4CodeGen_Private::FClassParams ClassParams;
@@ -190,9 +151,8 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 		(UObject* (*)())Z_Construct_UPackage__Script_VPPlayground,
 	};
 	const FClassFunctionLinkInfo Z_Construct_UClass_ULaunchable_Statics::FuncInfo[] = {
-		{ &Z_Construct_UFunction_ULaunchable_Launch, "Launch" }, // 3331561756
-		{ &Z_Construct_UFunction_ULaunchable_OnBeginOverlap, "OnBeginOverlap" }, // 1538843301
-		{ &Z_Construct_UFunction_ULaunchable_PlayEffects, "PlayEffects" }, // 876655002
+		{ &Z_Construct_UFunction_ULaunchable_Launch, "Launch" }, // 38614268
+		{ &Z_Construct_UFunction_ULaunchable_OnBeginOverlap, "OnBeginOverlap" }, // 2641817019
 	};
 #if WITH_METADATA
 	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ULaunchable_Statics::Class_MetaDataParams[] = {
@@ -258,20 +218,6 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 	};
 #endif
 	const UE4CodeGen_Private::FFloatPropertyParams Z_Construct_UClass_ULaunchable_Statics::NewProp_UpwardForce = { "UpwardForce", nullptr, (EPropertyFlags)0x0040000000000001, UE4CodeGen_Private::EPropertyGenFlags::Float, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ULaunchable, UpwardForce), METADATA_PARAMS(Z_Construct_UClass_ULaunchable_Statics::NewProp_UpwardForce_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ULaunchable_Statics::NewProp_UpwardForce_MetaData)) };
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ULaunchable_Statics::NewProp_HitParticle_MetaData[] = {
-		{ "Category", "Effects" },
-		{ "ModuleRelativePath", "Public/Launchable.h" },
-	};
-#endif
-	const UE4CodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ULaunchable_Statics::NewProp_HitParticle = { "HitParticle", nullptr, (EPropertyFlags)0x0040000000000001, UE4CodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ULaunchable, HitParticle), Z_Construct_UClass_UParticleSystem_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ULaunchable_Statics::NewProp_HitParticle_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ULaunchable_Statics::NewProp_HitParticle_MetaData)) };
-#if WITH_METADATA
-	const UE4CodeGen_Private::FMetaDataPairParam Z_Construct_UClass_ULaunchable_Statics::NewProp_HitSound_MetaData[] = {
-		{ "Category", "Effects" },
-		{ "ModuleRelativePath", "Public/Launchable.h" },
-	};
-#endif
-	const UE4CodeGen_Private::FObjectPropertyParams Z_Construct_UClass_ULaunchable_Statics::NewProp_HitSound = { "HitSound", nullptr, (EPropertyFlags)0x0040000000000001, UE4CodeGen_Private::EPropertyGenFlags::Object, RF_Public|RF_Transient|RF_MarkAsNative, 1, STRUCT_OFFSET(ULaunchable, HitSound), Z_Construct_UClass_USoundBase_NoRegister, METADATA_PARAMS(Z_Construct_UClass_ULaunchable_Statics::NewProp_HitSound_MetaData, UE_ARRAY_COUNT(Z_Construct_UClass_ULaunchable_Statics::NewProp_HitSound_MetaData)) };
 	const UE4CodeGen_Private::FPropertyParamsBase* const Z_Construct_UClass_ULaunchable_Statics::PropPointers[] = {
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ULaunchable_Statics::NewProp_RemoveActorAfterLaunch,
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ULaunchable_Statics::NewProp_RemoveDelay,
@@ -279,8 +225,6 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ULaunchable_Statics::NewProp_LaunchAngle,
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ULaunchable_Statics::NewProp_Velocity,
 		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ULaunchable_Statics::NewProp_UpwardForce,
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ULaunchable_Statics::NewProp_HitParticle,
-		(const UE4CodeGen_Private::FPropertyParamsBase*)&Z_Construct_UClass_ULaunchable_Statics::NewProp_HitSound,
 	};
 	const FCppClassTypeInfoStatic Z_Construct_UClass_ULaunchable_Statics::StaticCppClassTypeInfo = {
 		TCppClassTypeTraits<ULaunchable>::IsAbstract,
@@ -309,7 +253,7 @@ void EmptyLinkFunctionForGeneratedCodeLaunchable() {}
 		}
 		return OuterClass;
 	}
-	IMPLEMENT_CLASS(ULaunchable, 2728725280);
+	IMPLEMENT_CLASS(ULaunchable, 336532479);
 	template<> VPPLAYGROUND_API UClass* StaticClass<ULaunchable>()
 	{
 		return ULaunchable::StaticClass();

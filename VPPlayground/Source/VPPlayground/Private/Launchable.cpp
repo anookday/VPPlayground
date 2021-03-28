@@ -4,6 +4,8 @@
 #include "Launchable.h"
 
 
+
+#include "EffectPlayer.h"
 #include "Launcher.h"
 #include "Animation/SkeletalMeshActor.h"
 #include "Components/CapsuleComponent.h"
@@ -24,12 +26,6 @@ void ULaunchable::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InitOwnerConfig();
-}
-
-void ULaunchable::InitOwnerConfig()
-{
-	// enable launch on overlap event 
 	GetOwner()->OnActorBeginOverlap.AddDynamic(this, &ULaunchable::OnBeginOverlap);
 }
 
@@ -37,23 +33,10 @@ void ULaunchable::OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	if (!HasLaunched && OverlappedActor != OtherActor && OtherActor->GetComponentByClass(ULauncher::StaticClass()))
 	{
-		PlayEffects();
 		Launch();
 		HasLaunched = true;
 	}
 	
-}
-
-void ULaunchable::PlayEffects() const
-{
-	if (HitParticle)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(this, HitParticle, GetOwner()->GetActorLocation());
-	}
-	if (HitSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, HitSound, GetOwner()->GetActorLocation());
-	}
 }
 
 FVector ULaunchable::GetImpulse(AActor* ActorToLaunch) const

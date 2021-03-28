@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Launchable.generated.h"
 
+class UEffectPlayer;
 
 UCLASS(Blueprintable)
 class VPPLAYGROUND_API ULaunchable : public UActorComponent
@@ -28,18 +29,11 @@ private:
 	float Velocity = 500.f;
 	UPROPERTY(EditAnywhere, Category = "Direction")
 	float UpwardForce = 1000.f;
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	UParticleSystem* HitParticle = nullptr;
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	USoundBase* HitSound = nullptr;
 	// FUNCTIONS	
-	void InitOwnerConfig();
 	UFUNCTION()
 	void OnBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
-	UFUNCTION(BlueprintCallable, Category = "Launch Effects")
-	void PlayEffects() const;
 	FVector GetImpulse(AActor* ActorToLaunch) const;
-	UFUNCTION(BlueprintCallable, Category = "Launch Owner")
+	UFUNCTION(BlueprintCallable, Category = "Launch Actions")
 	void Launch() const;
 
 public:	
